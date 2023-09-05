@@ -6,4 +6,5 @@ int main()
     ui UI;
     UI.load_init();
     UI.ui_main();
+    return 0;
 }
