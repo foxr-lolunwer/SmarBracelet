@@ -26,9 +26,6 @@
     <ClInclude Include="operate.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="address_book.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="health.h">
       <Filter>头文件</Filter>
     </ClInclude>
