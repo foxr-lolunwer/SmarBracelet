@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/SmarBracelet/resource/buffer/call_phone.ogg
+/SmarBracelet/resource/img/address_book_icon.png
+/SmarBracelet/resource/img/health_icon.png
