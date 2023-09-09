@@ -139,10 +139,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="phone.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="operate.h" />
     <ClInclude Include="health.h" />
+    <ClInclude Include="phone.h" />
     <ClInclude Include="S_ui.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

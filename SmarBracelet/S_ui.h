@@ -7,6 +7,7 @@
 #include <ctime>
 #include "health.h"
 #include "operate.h"
+#include "phone.h"
 using namespace std;
 
 class ui {
@@ -30,8 +31,6 @@ private:
     sf::Texture main_menu_img;          // 纹理类-主菜单
     sf::Sprite health_menu;
     sf::Texture health_menu_img;
-    sf::Sprite health_icon;
-    sf::Texture health_icon_img;
     sf::Sprite address_book_menu;
     sf::Texture address_book_menu_img;
     sf::Sprite health_choice_menu;
@@ -44,18 +43,19 @@ private:
 
     health user;                        // 健康模块核心类
 
+    phone phone;                        // 通讯录模块核心类
+
     int d_main_menu();                  // 默认界面-显示时间
     int d_health_menu();                // 健康界面-个人信息+计步
     int d_address_book_menu();          // 通讯录界面-通讯录+接打电话
     void d_health_choice_menu();        // 健康模块-选择功能界面
     void d_health_heart_rate_menu();    // 健康模块-测心率
-    void d_address_book_choice_menu();  // 通讯录模块-显示联系人
 public:  
     ui() {
         // 读取使用者信息
         user.set_information("user", 20, 60, 170); 
         // 创建一个400*1000窗口，禁止调整大小，帧率30
-        window.create(sf::VideoMode(400, 1000), "SmarBracelet", sf::Style::Close);  
+        window.create(sf::VideoMode(400, 1000), "SmarBracelet" ,sf::Style::Close);
         window.setFramerateLimit(30);
     }
     void ui_main();               // ui选择
@@ -197,6 +197,8 @@ int ui::d_health_menu() {
             }
             else if (command)
                 return command;
+            else
+                continue;
         }
         window.clear();
         window.draw(health_menu);
@@ -221,7 +223,7 @@ int ui::d_address_book_menu() {
             command = isSlideScreen(event.mouseButton.x);
             if (command == 3)
             {
-                // int command_health = d_address_book_choice_menu();
+                phone.menu();
                 // func:person information display...
             }
             else if (command)
@@ -258,6 +260,10 @@ void ui::d_health_choice_menu() {
             cout << "mouse pos:" << event.mouseButton.x << "   " << event.mouseButton.y << endl;
             command = isHealthChoice(event.mouseButton.x, event.mouseButton.y);
             printf("health command:%d\n", command);
+            if (command == 1)
+            {
+                user.m_information();
+            }
             if (command == 2)
             {
                 d_health_heart_rate_menu();
@@ -318,32 +324,6 @@ void ui::d_health_heart_rate_menu() {
         return;
     }
 }
-// 通讯录模块-显示联系人
-void ui::d_address_book_choice_menu() {
-    return;
-    /*int command;
-    sf::Event event;
-    while (true)
-    {
-        window.clear();
-        window.draw(health_choice_menu);
-        window.display();
-        window.waitEvent(event);
-        if (event.type == sf::Event::Closed)
-        {
-            window.close();
-            return;
-        }
-        else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
-        {
-            cout << event.mouseButton.x << "   " << event.mouseButton.y << endl;
-            command = isHealthChoice(event.mouseButton.x, event.mouseButton.y);
-            if (command)
-                return command;
-        }
-    }*/
-}
-// 加载图像、字体、音频、默认显示位置等资源
 void ui::load_init() {
     // 加载音效
     {
@@ -372,74 +352,27 @@ void ui::load_init() {
         l_user_name.setFont(font1); l_user_name.setCharacterSize(50); l_user_name.setFillColor(sf::Color::White); l_user_name.setStyle(sf::Text::Regular); l_user_name.setPosition(sf::Vector2f(160, 70));l_user_name.setString("Hi " + user.m_name);
         l_heart_rate.setFont(font1); l_heart_rate.setCharacterSize(50); l_heart_rate.setFillColor(sf::Color::White); l_heart_rate.setStyle(sf::Text::Regular); l_heart_rate.setPosition(sf::Vector2f(150, 237)); l_heart_rate.setString("---");
         l_BMI.setFont(font1); l_BMI.setCharacterSize(50); l_BMI.setFillColor(sf::Color::White); l_BMI.setStyle(sf::Text::Regular); l_BMI.setPosition(sf::Vector2f(150, 700)); l_BMI.setString(to_string(user.BMI));
+        user.l_name.setFont(font1); user.l_name.setCharacterSize(50); user.l_name.setFillColor(sf::Color::White); user.l_name.setStyle(sf::Text::Regular); user.l_name.setPosition(sf::Vector2f(100, 200)); user.l_name.setString("name: " + user.m_name);
+        user.l_age.setFont(font1); user.l_age.setCharacterSize(50); user.l_age.setFillColor(sf::Color::White); user.l_age.setStyle(sf::Text::Regular); user.l_age.setPosition(sf::Vector2f(100, 400)); user.l_age.setString("age: " + to_string(user.m_age));
+        user.l_weight.setFont(font1); user.l_weight.setCharacterSize(50); user.l_weight.setFillColor(sf::Color::White); user.l_weight.setStyle(sf::Text::Regular); user.l_weight.setPosition(sf::Vector2f(100, 600)); user.l_weight.setString("weight: " + to_string(user.m_weight));
+        user.l_height.setFont(font1); user.l_height.setCharacterSize(50); user.l_height.setFillColor(sf::Color::White); user.l_height.setStyle(sf::Text::Regular); user.l_height.setPosition(sf::Vector2f(100, 800)); user.l_height.setString("height: " + to_string(int(user.m_height * 100)));
+
     }
     // 加载/设置纹理 设定位置
     {
         // 时间界面/默认菜单
-        if (!main_menu_img.loadFromFile("resource/img/bg_main.png"))
-        {
-            // error...
-        }
-        main_menu.setTexture(main_menu_img);  // 设置纹理
-        main_menu.setPosition(sf::Vector2f(0, 0));  // 设置初始位置
-
+        if (!main_menu_img.loadFromFile("resource/img/bg_main.png")){} main_menu.setTexture(main_menu_img); /* 设置纹理 */ main_menu.setPosition(sf::Vector2f(0, 0));  /* 设置初始位置 */
         // 健康界面
-        if (!health_menu_img.loadFromFile("resource/img/bg_health.png"))
-        {
-            // error...
-        }
-        health_menu.setTexture(health_menu_img);
-        health_menu.setPosition(sf::Vector2f(0, 0));
-
-        // 健康界面图标
-        if (!health_icon_img.loadFromFile("resource/img/health_icon.png"))
-        {
-            // error...
-        }
-        health_icon.setTexture(health_icon_img);
-        health_icon.setPosition(sf::Vector2f(72, 372));
-
+        if (!health_menu_img.loadFromFile("resource/img/bg_health.png")){} health_menu.setTexture(health_menu_img); health_menu.setPosition(sf::Vector2f(0, 0));
         // 通讯录界面
-        if (!address_book_menu_img.loadFromFile("resource/img/bg_address_book.png"))
-        {
-            // error...
-        }
-        address_book_menu.setTexture(address_book_menu_img);
-        address_book_menu.setPosition(sf::Vector2f(0, 0));
-
+        if (!address_book_menu_img.loadFromFile("resource/img/bg_address_book.png")){} address_book_menu.setTexture(address_book_menu_img); address_book_menu.setPosition(sf::Vector2f(0, 0));
         // 健康模块-选择功能界面
-        if (!health_choice_menu_img.loadFromFile("resource/img/bg_health_choice.png"))
-        {
-            // error...
-        }
-        health_choice_menu.setTexture(health_choice_menu_img);
-        health_choice_menu.setPosition(sf::Vector2f(0, 0));
-
+        if (!health_choice_menu_img.loadFromFile("resource/img/bg_health_choice.png")){} health_choice_menu.setTexture(health_choice_menu_img); health_choice_menu.setPosition(sf::Vector2f(0, 0));
         // 计步器tom
-        if (!user.user_person_img.loadFromFile("resource/img/person_bg.png"))
-        {
-            // error...
-        }
-        user.user_person_img.setSmooth(true);
-        user.user_person.setTexture(user.user_person_img);
-        user.user_person.setPosition(sf::Vector2f(350, 500));
-
+        if (!user.user_person_img.loadFromFile("resource/img/person_bg.png")){} user.user_person_img.setSmooth(true); user.user_person.setTexture(user.user_person_img); user.user_person.setPosition(sf::Vector2f(350, 500));
         // 计步器map
-        if (!user.map_img.loadFromFile("resource/img/go_map.jpg"))
-        {
-            // error...
-        }
-        user.map.setTexture(user.map_img);
-        user.map.setPosition(sf::Vector2f(0, 0));
-
+        if (!user.map_img.loadFromFile("resource/img/go_map.jpg")){} user.map.setTexture(user.map_img); user.map.setPosition(sf::Vector2f(0, 0));
         // 心率图标
-        if (!heart_rate_img.loadFromFile("resource/img/heart_rate_icon.png"))
-        {
-            // error...
-        }
-        heart_rate.setTexture(heart_rate_img);
-        sf::FloatRect textRect = heart_rate.getLocalBounds();
-        heart_rate.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
-        heart_rate.setPosition(sf::Vector2f(200, 500));
+        if (!heart_rate_img.loadFromFile("resource/img/heart_rate_icon.png")){} heart_rate.setTexture(heart_rate_img); sf::FloatRect textRect = heart_rate.getLocalBounds(); heart_rate.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f); heart_rate.setPosition(sf::Vector2f(200, 500));
     }
 }

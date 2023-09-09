@@ -3,16 +3,22 @@
 #include<iostream>
 using namespace std;
 
+// 是否切换界面/选择功能
 int isSlideScreen(int x) {
+	// 向右翻页
 	if (x >= 300 && x <= 400)
 		return 1;
+	// 向左翻页
 	if (x >= 0 && x <= 100)
 		return 2;
+	// 选择该功能
 	if (x > 100 && x < 300)
 		return 3;
+	// 没有在屏幕内点击
     return 0;
 }
 
+// 健康选择界面判断选择内容
 int isHealthChoice(int x , int y) {
 	// 姓名
 	if (x >= 36 && x <= 146 && y >= 45 && y <= 155)
